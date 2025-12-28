@@ -1,0 +1,32 @@
+name: ci
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build images
+        run: |
+          docker build -t crypto/ingestor-service:ci ./services/ingestor-service
+          docker build -t crypto/detector-service:ci ./services/detector-service
+          docker build -t crypto/api-service:ci ./services/api-service
+          docker build -t crypto/web-frontend:ci ./web-frontend
+
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start stack and smoke test
+        run: |
+          cp .env.example .env
+          docker compose up -d --build
+          sleep 10
+          curl -fsS http://localhost:8000/healthz
+          curl -fsS http://localhost:8000/version
+          curl -fsS http://localhost:8000/api/coins | head -c 200
+          docker compose down -v

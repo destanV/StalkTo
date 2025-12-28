@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crypto-live-detection-dev
+spec:
+  project: default
+  source:
+    repoURL: https://YOUR_GIT_REPO_URL.git
+    targetRevision: main
+    path: deploy/k8s/overlays/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: crypto-live-detection
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

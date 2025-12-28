@@ -1,0 +1,12 @@
+{
+  "name": "detector-service",
+  "version": "1.0.0",
+  "main": "detector.js",
+  "type": "commonjs",
+  "dependencies": {
+    "redis": "^4.6.13"
+  },
+  "scripts": {
+    "start": "node detector.js"
+  }
+}

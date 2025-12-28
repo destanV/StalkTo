@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # -------------------------------------------------------
+  # 1. MONGODB (Veritabanı Kutusu)
+  # -------------------------------------------------------
+  mongodb:
+    image: mongo:latest
+    container_name: btc-mongo
+    ports:
+      - "27017:27017"  # Dışarıdan (Lokalden) erişim için kapı
+    volumes:
+      - mongodb_data:/data/db # Veriler kaybolmasın diye Docker'ın deposuna yedekle
+    restart: always
+
+  # -------------------------------------------------------
+  # 2. MONGO EXPRESS (Veritabanı İzleme Ekranı - Sürpriz!)
+  # -------------------------------------------------------
+  mongo-express:
+    image: mongo-express
+    container_name: btc-mongo-ui
+    restart: always
+    ports:
+      - "8081:8081" # Tarayıcıdan http://localhost:8081 ile gireceksin
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb # Hangi sunucuya bağlanacak? (Yukarıdaki servis ismi)
+      - ME_CONFIG_BASICAUTH_USERNAME=deniz # Giriş kullanıcı adı
+      - ME_CONFIG_BASICAUTH_PASSWORD=deniz123  # Giriş şifresi
+    depends_on:
+      - mongodb
+
+  # -------------------------------------------------------
+  # 3. WORKER (Python - Veri Toplayıcı)
+  # -------------------------------------------------------
+  worker:
+    build: 
+      context: ./service-worker
+      dockerfile: Dockerfile
+    container_name: btc-worker
+    depends_on:
+      - mongodb
+    environment:
+      # Worker, 'mongodb' isimli servise bağlanacak
+      - MONGO_URI=mongodb://mongodb:27017 
+      - MONGO_DB_NAME=btc_db
+    restart: always
+
+  # -------------------------------------------------------
+  # 4. API (Node.js - Veri Sunucu) - Şimdilik Yorumda kalsın
+  # -------------------------------------------------------
+  # api:
+  #   build: 
+  #     context: ./service-api
+  #     dockerfile: Dockerfile
+  #   ... (Burasını sonra açacağız)
+
+  # -------------------------------------------------------
+  # 5. FRONTEND (Nginx) - Şimdilik Yorumda kalsın
+  # -------------------------------------------------------
+  # frontend:
+  #   ... (Burasını sonra açacağız)
+
+volumes:
+  mongodb_data: # Docker'ın verileri saklayacağı sanal disk alanı

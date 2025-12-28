@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingestor-service
+  namespace: crypto-live-detection
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ingestor-service
+  template:
+    metadata:
+      labels:
+        app: ingestor-service
+    spec:
+      containers:
+        - name: ingestor-service
+          image: YOUR_REGISTRY/ingestor-service:dev
+          env:
+            - name: REDIS_URL
+              value: redis://redis:6379
+            - name: INGEST_POLL_SECONDS
+              value: "15"
+            - name: COINRANKING_API_KEY
+              value: ""

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Cryptocurrency Portfolio Tracker</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<header class="bg-dark text-white py-4 mb-4">
+		<div class="container text-center">
+			<h1>Cryptocurrency Portfolio Tracker</h1>
+			<small id="versionText" class="text-muted">Loading service version...</small>
+		</div>
+	</header>
+
+	<div class="container">
+
+		<div class="mb-3">
+			<div class="card">
+				<div class="card-body">
+					<h5 class="card-title mb-2">Live Alerts</h5>
+					<div id="alertsBox" class="alerts-box">
+						<small class="text-muted">Waiting for alerts...</small>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="input-group mb-4">
+			<input type="text" id="searchInput" class="form-control" placeholder="Search cryptocurrencies...">
+			<div class="input-group-append">
+				<button class="btn btn-primary" type="button" id="searchButton">Search</button>
+			</div>
+		</div>
+
+		<div class="table-responsive">
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Logo</th>
+						<th>Name</th>
+						<th>Symbol</th>
+						<th>Price</th>
+						<th>Price Change</th>
+						<th>24h Volume</th>
+						<th>Market Cap</th>
+					</tr>
+				</thead>
+				<tbody id="cryptoTable"></tbody>
+			</table>
+		</div>
+	</div>
+
+	<footer class="bg-dark text-white py-4 mt-4">
+		<div class="container text-center">
+			<p>© 2024 Cryptocurrency Portfolio Tracker</p>
+		</div>
+	</footer>
+
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="script.js"></script>
+</body>
+
+</html>
