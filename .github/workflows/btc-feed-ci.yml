@@ -1,0 +1,38 @@
+name: btc-feed CI
+
+on:
+  push:
+    branches: [ "temp", "main" ]
+    paths:
+      - 'btc-feed/**' # btc-feed klasöründe herhangi bir şey değişirse çalış
+
+jobs:
+  # build api service
+  build-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu Cek
+        uses: actions/checkout@v3
+      
+      - name: API Docker Build
+        run: docker build ./btc-feed/services/api-service -t btc-feed-api:latest
+
+  # build frontend
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu Cek
+        uses: actions/checkout@v3
+      
+      - name: Frontend Docker Build
+        run: docker build ./btc-feed/services/frontend-service -t btc-feed-frontend:latest
+
+  # build worker
+  build-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu Cek
+        uses: actions/checkout@v3
+      
+      - name: Worker Docker Build
+        run: docker build ./btc-feed/services/worker-service -t btc-feed-worker:latest

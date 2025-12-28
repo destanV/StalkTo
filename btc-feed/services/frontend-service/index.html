@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Canlı Borsa Testi</title>
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; }
+        #fiyat { font-size: 48px; font-weight: bold; color: green; }
+        .kutu { border: 1px solid #ccc; padding: 20px; display: inline-block; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="kutu">
+        <h2>Canlı Bitcoin Fiyatı</h2>
+        <div id="fiyat">Bağlanıyor...</div>
+        <p id="zaman" style="color: gray;">-</p>
+    </div>
+
+    <script>
+        // 1. Backend'e Bağlan
+        const socket = io("http://localhost:3000");
+
+        // Bağlantı durumunu kontrol et
+        socket.on("connect", () => {
+            console.log("Sunucuya bağlandık! ID:", socket.id);
+            document.getElementById("fiyat").innerText = "Veri Bekleniyor...";
+        });
+
+        // 2. 'price_update' mesajını dinle (Backend'de bu ismi vermiştik)
+        socket.on("price_update", (veri) => {
+            console.log("Yeni Veri Geldi:", veri);
+            
+            // 3. Ekrana Yaz
+            document.getElementById("fiyat").innerText = veri.price + " USD";
+            
+            // Zamanı formatla
+            const tarih = new Date(veri.timestamp).toLocaleTimeString();
+            document.getElementById("zaman").innerText = "Son Güncelleme: " + tarih;
+            
+            // Görsel efekt (Fiyat değişince renk yak)
+            const el = document.getElementById("fiyat");
+            el.style.color = "red";
+            setTimeout(() => { el.style.color = "green"; }, 500);
+        });
+
+        socket.on("disconnect", () => {
+            document.getElementById("fiyat").innerText = "Bağlantı Koptu!";
+            document.getElementById("fiyat").style.color = "gray";
+        });
+    </script>
+</body>
+</html>
