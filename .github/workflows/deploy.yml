@@ -22,7 +22,7 @@ jobs:
       - name: Build&PushAPI
         uses: docker/build-push-action@v4
         with:
-          context: ./services/api-service 
+          context: ./btc-feed/services/api-service 
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/btc-api:v${{ github.run_number }}
 
@@ -42,7 +42,7 @@ jobs:
       - name: Build&PushWorker
         uses: docker/build-push-action@v4
         with:
-          context: ./services/worker-service
+          context: ./btc-feed/services/worker-service
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/btc-worker:v${{ github.run_number }}
 
@@ -62,6 +62,6 @@ jobs:
       - name: Build&PushFrontend
         uses: docker/build-push-action@v4
         with:
-          context: ./services/frontend-service
+          context: ./btc-feed/services/frontend-service
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/btc-frontend:v${{ github.run_number }}
