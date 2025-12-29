@@ -6,7 +6,7 @@
     <script src="http://localhost:3000/socket.io/socket.io.js"></script>
     <style>
         body { font-family: sans-serif; text-align: center; padding: 50px; }
-        #fiyat { font-size: 48px; font-weight: bold; color: green; }
+        #btc-fiyat, #eth-fiyat, #ltc-fiyat { font-size: 48px; font-weight: bold; color: green; }
         .kutu { border: 1px solid #ccc; padding: 20px; display: inline-block; border-radius: 10px; }
     </style>
 </head>
@@ -14,8 +14,20 @@
 
     <div class="kutu">
         <h2>Canlı Bitcoin Fiyatı</h2>
-        <div id="fiyat">Bağlanıyor...</div>
-        <p id="zaman" style="color: gray;">-</p>
+        <div id="btc-fiyat">Bağlanıyor...</div>
+        <p id="btc-zaman" style="color: gray;">-</p>
+    </div>
+
+    <div class="kutu">
+        <h2>Canlı Ethereum Fiyatı</h2>
+        <div id="eth-fiyat">Bağlanıyor...</div>
+        <p id="eth-zaman" style="color: gray;">-</p>
+    </div>
+
+    <div class="kutu">
+        <h2>Canlı Litecoin Fiyatı</h2>
+        <div id="ltc-fiyat">Bağlanıyor...</div>
+        <p id="ltc-zaman" style="color: gray;">-</p>
     </div>
 
     <script>
@@ -25,29 +37,47 @@
         // Bağlantı durumunu kontrol et
         socket.on("connect", () => {
             console.log("Sunucuya bağlandık! ID:", socket.id);
-            document.getElementById("fiyat").innerText = "Veri Bekleniyor...";
+            ['btc', 'eth', 'ltc'].forEach(id => {
+                document.getElementById(`${id}-fiyat`).innerText = "Veri Bekleniyor...";
+            });
         });
 
         // 2. 'price_update' mesajını dinle (Backend'de bu ismi vermiştik)
         socket.on("price_update", (veri) => {
             console.log("Yeni Veri Geldi:", veri);
             
-            // 3. Ekrana Yaz
-            document.getElementById("fiyat").innerText = veri.price + " USD";
+            // Veri artık obje: { BTCUSDT: {...}, ETHUSDT: {...}, LTCUSDT: {...} }
+            const coins = {
+                'BTCUSDT': { id: 'btc', name: 'Bitcoin' },
+                'ETHUSDT': { id: 'eth', name: 'Ethereum' },
+                'LTCUSDT': { id: 'ltc', name: 'Litecoin' }
+            };
             
-            // Zamanı formatla
-            const tarih = new Date(veri.timestamp).toLocaleTimeString();
-            document.getElementById("zaman").innerText = "Son Güncelleme: " + tarih;
-            
-            // Görsel efekt (Fiyat değişince renk yak)
-            const el = document.getElementById("fiyat");
-            el.style.color = "red";
-            setTimeout(() => { el.style.color = "green"; }, 500);
+            for (const pair in veri) {
+                if (coins[pair]) {
+                    const coinData = veri[pair];
+                    const coinId = coins[pair].id;
+                    
+                    // Ekrana Yaz
+                    document.getElementById(`${coinId}-fiyat`).innerText = coinData.price + " USD";
+                    
+                    // Zamanı formatla
+                    const tarih = new Date(coinData.timestamp).toLocaleTimeString();
+                    document.getElementById(`${coinId}-zaman`).innerText = "Son Güncelleme: " + tarih;
+                    
+                    // Görsel efekt
+                    const el = document.getElementById(`${coinId}-fiyat`);
+                    el.style.color = "red";
+                    setTimeout(() => { el.style.color = "green"; }, 500);
+                }
+            }
         });
 
         socket.on("disconnect", () => {
-            document.getElementById("fiyat").innerText = "Bağlantı Koptu!";
-            document.getElementById("fiyat").style.color = "gray";
+            ['btc', 'eth', 'ltc'].forEach(id => {
+                document.getElementById(`${id}-fiyat`).innerText = "Bağlantı Koptu!";
+                document.getElementById(`${id}-fiyat`).style.color = "gray";
+            });
         });
     </script>
 </body>

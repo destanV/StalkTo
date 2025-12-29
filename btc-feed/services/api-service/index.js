@@ -23,13 +23,20 @@ console.log(`baglaniyor: ${connectionString}`);
 mongoose.connect(connectionString)
   .then(() => {
       console.log("Mongo bağlandık");
-      // Her 10 saniyede bir son fiyatı alıp bağlı kullanıcılara "yayınlıyoruz"
+      // Her 10 saniyede bir son fiyatları alıp bağlı kullanıcılara "yayınlıyoruz"
       setInterval(async () => {
           try {
-              const latestPrice = await Price.findOne().sort({_id: -1});
-              if (latestPrice) {
+              const pairs = ['BTCUSDT', 'ETHUSDT', 'LTCUSDT'];
+              const prices = {};
+              for (const pair of pairs) {
+                  const latestPrice = await Price.findOne({ pair }).sort({ timestamp: -1 });
+                  if (latestPrice) {
+                      prices[pair] = latestPrice;
+                  }
+              }
+              if (Object.keys(prices).length > 0) {
                   // 'price_update' kanalı üzerinden veriyi fırlat
-                  io.emit('price_update', latestPrice);
+                  io.emit('price_update', prices);
               }
           } catch (err) {
               console.error("Veri okuma hatası:", err);

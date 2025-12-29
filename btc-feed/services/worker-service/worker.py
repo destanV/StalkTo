@@ -14,7 +14,7 @@ try:
 except Exception as e:
     print(f"mongoDB hata: {e}")
 
-url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
+url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin&vs_currencies=usd"
 
 print("worker servisi başlatıldı")
 
@@ -27,23 +27,31 @@ while True:
         response = requests.get(anti_cache_url, headers=headers, timeout=10)
         data = response.json()
         
-        # coingecko api res: {'bitcoin': {'usd': 87500.12}}
-        if "bitcoin" in data:
-            current_price = float(data["bitcoin"]["usd"])
-            current_time = int(time.time() * 1000)
+        # coingecko api res: {'bitcoin': {'usd': 87500.12}, 'ethereum': {'usd': 2500}, ...}
+        coins = ['bitcoin', 'ethereum', 'litecoin']
+        for coin in coins:
+            if coin in data and 'usd' in data[coin]:
+                current_price = float(data[coin]["usd"])
+                current_time = int(time.time() * 1000)
 
-            to_be_inserted = {
-                "timestamp": current_time,
-                "price": current_price,
-                "pair": "BTCUSDT",
-                "source": "CoinGecko"
-            }
+                pair = {
+                    'bitcoin': 'BTCUSDT',
+                    'ethereum': 'ETHUSDT',
+                    'litecoin': 'LTCUSDT'
+                }.get(coin, f"{coin.upper()}USDT")
 
-            collection.insert_one(to_be_inserted)
-            print(f"veritabanına fiyat yazdık: {current_price}")
-        else:
-            print(f" beklenmedik response: {data}")
+                to_be_inserted = {
+                    "timestamp": current_time,
+                    "price": current_price,
+                    "pair": pair,
+                    "source": "CoinGecko"
+                }
+
+                collection.insert_one(to_be_inserted)
+                print(f"veritabanına {coin} fiyat yazdık: {current_price}")
+            else:
+                print(f" {coin} için beklenmedik response: {data}")
 
     except Exception as e:
         print(f"hata: {e}")
-    time.sleep(10)
+    time.sleep(30)  # Increased from 10 to 30 seconds to avoid rate limits

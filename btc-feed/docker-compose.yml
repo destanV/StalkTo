@@ -10,6 +10,11 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   #API
   api:
@@ -23,7 +28,8 @@ services:
       - MONGO_DB_NAME=btc_db
       - PORT=3000
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
 
   #WORKER
   worker:
@@ -34,7 +40,8 @@ services:
       - MONGO_URI=mongodb://mongo:27017
       - MONGO_DB_NAME=btc_db
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
 
   # FRONTEND 
   frontend:
