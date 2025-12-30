@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: worker
-        image: nasted1/btc-worker:v1
+        image: nasted1/btc-worker:v4
         env:
         - name: MONGO_URI
           value: "mongodb://mongo:27017"

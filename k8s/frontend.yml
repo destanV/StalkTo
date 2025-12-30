@@ -14,8 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        # DİKKAT: Kullanıcı adını ve versiyonu kontrol et
-        image: nasted1/btc-frontend:v1
+        image: nasted1/btc-frontend:v4
         ports:
         - containerPort: 80
 ---

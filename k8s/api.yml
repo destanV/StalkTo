@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: api
-        image: nasted1/btc-api:v1 
+        image: nasted1/btc-api:v4 
         ports:
         - containerPort: 3000
         env:
@@ -35,4 +35,4 @@ spec:
   ports:
     - port: 3000
       targetPort: 3000
-  type: ClusterIP
+  type: LoadBalancer
