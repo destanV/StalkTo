@@ -2,9 +2,9 @@ name: btc-feed CI
 
 on:
   push:
-    branches: [ "temp", "main" ]
+    branches: [ "master" ]
     paths:
-      - 'btc-feed/**' # btc-feed klasöründe herhangi bir şey değişirse çalış
+      - 'btc-feed/**'
 
 jobs:
   # build api service
